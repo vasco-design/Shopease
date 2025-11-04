@@ -4,7 +4,7 @@ import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import ProductCard from '@/components/ui/ProductCard'
 import { PRODUCTS, type Product } from '@/lib/data'
-import { Slider } from '@/components/ui/slider'
+
 import { MotionDiv, stagger, fadeInUp, slideIn } from '@/lib/framer-animations'
 import { GlobalLoading } from '@/components/ui/loading'
 import { formatPrice } from '@/lib/utils'

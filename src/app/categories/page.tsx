@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { PRODUCTS, type Product } from '@/lib/data'
 import { ArrowRight, Smartphone, ShoppingBag, Home, Package } from 'lucide-react'
+import { Suspense } from 'react'
 
 const categoryIcons = {
   'Electronics': Smartphone,
@@ -10,6 +11,14 @@ const categoryIcons = {
 }
 
 export default function CategoriesPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CategoriesContent />
+    </Suspense>
+  );
+}
+
+function CategoriesContent() {
   const products = PRODUCTS
   const categories: string[] = Array.from(new Set(products.map((p: Product) => p.category)))
 

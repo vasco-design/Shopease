@@ -2,7 +2,7 @@
 
 import { useCart } from '@/lib/cart'
 import { formatPrice } from '@/lib/utils'
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -10,6 +10,14 @@ import { Card } from '@/components/ui/card'
 import Image from 'next/image'
 
 export default function CheckoutPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CheckoutContent />
+    </Suspense>
+  );
+}
+
+function CheckoutContent() {
   const { items, total } = useCart()
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({

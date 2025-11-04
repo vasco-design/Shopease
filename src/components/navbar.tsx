@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { Search, Menu } from 'lucide-react'
 import { CartSheet } from '@/components/cart-sheet'
 import { ThemeToggle } from '@/components/theme-toggle'
@@ -23,6 +23,14 @@ import {
 } from "@/components/ui/sheet"
 
 export default function Navbar() {
+  return (
+    <Suspense fallback={<div className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b shadow-sm h-16" />}>
+      <NavbarContent />
+    </Suspense>
+  );
+}
+
+function NavbarContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const paramQuery = searchParams?.get('search') ?? ''

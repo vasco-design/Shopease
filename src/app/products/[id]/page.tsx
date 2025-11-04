@@ -1,36 +1,46 @@
 import { PRODUCTS } from '@/lib/data'
 import type { Product } from '@/lib/data'
-import ProductDetails from './ProductDetails'
 import { Metadata } from 'next'
+import ProductDetails from './ProductDetails'
 
-function getProduct(id: string): Product | undefined {
+async function getProduct(id: string): Promise<Product | undefined> {
   return PRODUCTS.find(p => p.id === id);
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { id: string };
-}): Promise<Metadata> {
-  const product = getProduct(params.id);
+type Props = {
+  params: { id: string }
+  searchParams?: { [key: string]: string | string[] | undefined }
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const product = await getProduct(params.id);
   return {
     title: product ? `${product.title} - ShopEase` : 'Product Not Found',
     description: product?.desc || 'Product not found'
   };
 }
 
+const ProductDetailsPage = async ({ params }: Props) => {
+  const product = await getProduct(params.id);
+  
+  if (!product) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900">Product Not Found</h1>
+          <p className="mt-2 text-gray-600">The product you&apos;re looking for doesn&apos;t exist.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return <ProductDetails product={product} />;
+}
+
+export default ProductDetailsPage;
+
 export async function generateStaticParams() {
   return PRODUCTS.map((product) => ({
     id: product.id,
   }))
-}
-
-export default function Page({
-  params,
-}: {
-  params: { id: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
-}) {
-  const product = getProduct(params.id);
-  return <ProductDetails product={product} />;
 }
