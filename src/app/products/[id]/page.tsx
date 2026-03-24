@@ -8,12 +8,13 @@ async function getProduct(id: string): Promise<Product | undefined> {
 }
 
 type Props = {
-  params: { id: string }
-  searchParams?: { [key: string]: string | string[] | undefined }
+  params: Promise<{ id: string }>
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const product = await getProduct(params.id);
+  const { id } = await params;
+  const product = await getProduct(id);
   return {
     title: product ? `${product.title} - ShopEase` : 'Product Not Found',
     description: product?.desc || 'Product not found'
@@ -21,7 +22,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 const ProductDetailsPage = async ({ params }: Props) => {
-  const product = await getProduct(params.id);
+  const { id } = await params;
+  const product = await getProduct(id);
   
   if (!product) {
     return (

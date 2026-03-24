@@ -12,11 +12,13 @@ type CartItem = {
 type CartContextType = {
   items: CartItem[]
   addToCart: (product: Product, quantity: number, size: string) => void
-  removeFromCart: (productId: string) => void
-  updateQuantity: (productId: string, quantity: number) => void
+  removeFromCart: (productId: string, size: string) => void
+  updateQuantity: (productId: string, size: string, quantity: number) => void
   clearCart: () => void
   totalItems: number
   subtotal: number
+  shipping: number
+  tax: number
   total: number
 }
 
@@ -63,21 +65,22 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     })
   }
 
-  const removeFromCart = (productId: string) => {
-    setItems(currentItems => 
-      currentItems.filter(item => item.product.id !== productId)
+  const removeFromCart = (productId: string, size: string) => {
+    setItems(currentItems =>
+      currentItems.filter(
+        item => !(item.product.id === productId && item.size === size)
+      )
     )
   }
 
-  const updateQuantity = (productId: string, quantity: number) => {
+  const updateQuantity = (productId: string, size: string, quantity: number) => {
     if (quantity < 1) {
-      removeFromCart(productId)
+      removeFromCart(productId, size)
       return
     }
-
     setItems(currentItems =>
       currentItems.map(item =>
-        item.product.id === productId
+        item.product.id === productId && item.size === size
           ? { ...item, quantity }
           : item
       )
@@ -95,7 +98,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     0
   ) ?? 0
 
-  const total = subtotal + SHIPPING_COST + (subtotal * TAX_RATE)
+  const shipping = SHIPPING_COST
+  const tax = Math.round(subtotal * TAX_RATE)
+  const total = subtotal + shipping + tax
 
   return (
     <CartContext.Provider
@@ -107,6 +112,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         clearCart,
         totalItems,
         subtotal,
+        shipping,
+        tax,
         total
       }}
     >

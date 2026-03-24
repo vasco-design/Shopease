@@ -1,10 +1,10 @@
 'use client'
 
-import type { Product } from '../../../lib/data'
-import { formatPrice } from '../../../lib/utils'
+import type { Product } from '@/lib/data'
+import { formatPrice } from '@/lib/utils'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useCart } from '../../../lib/cart'
+import { useCart } from '@/lib/cart'
 import { ShoppingCart, Check, Zap } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'

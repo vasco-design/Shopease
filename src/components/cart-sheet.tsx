@@ -1,23 +1,17 @@
-﻿'use client';
+'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { useCart } from '@/lib/cart';
 import { ShoppingBag, Plus, Minus, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { formatPrice } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 export function CartSheet() {
-  const { items, totalItems, total, updateQuantity, removeFromCart } = useCart();
+  const { items, totalItems, total, subtotal, shipping, tax, updateQuantity, removeFromCart } = useCart();
   const [isOpen, setIsOpen] = useState(false);
-  const [isCheckingOut, setIsCheckingOut] = useState(false);
-
-  const handleCheckout = async () => {
-    setIsCheckingOut(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setIsCheckingOut(false);
-    alert(`This is a demo - no actual checkout process is implemented`);
-  }
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -44,8 +38,8 @@ export function CartSheet() {
           ) : (
             <ul className="divide-y divide-gray-200">
               {items.map((item) => (
-                <li key={item.product.id} className="py-6 flex">
-                  <div className="relative h-24 w-24 rounded-md overflow-hidden">
+                <li key={`${item.product.id}-${item.size}`} className="py-6 flex">
+                  <div className="relative h-24 w-24 rounded-md overflow-hidden shrink-0">
                     <Image
                       src={item.product.img}
                       alt={item.product.title}
@@ -54,30 +48,33 @@ export function CartSheet() {
                       sizes="96px"
                     />
                   </div>
-                  <div className="ml-4 flex-1">
+                  <div className="ml-4 flex-1 min-w-0">
                     <div className="flex justify-between">
                       <div>
                         <h3 className="text-sm font-medium text-gray-900">{item.product.title}</h3>
-                        <p className="mt-1 text-sm text-gray-500">{formatPrice(item.product.price)}</p>
+                        <p className="mt-1 text-sm text-gray-500">Size: {item.size} · {formatPrice(item.product.price)}</p>
                       </div>
                       <button
-                        onClick={() => removeFromCart(item.product.id)}
-                        className="text-gray-400 hover:text-gray-500"
+                        onClick={() => removeFromCart(item.product.id, item.size)}
+                        className="text-gray-400 hover:text-gray-500 shrink-0"
+                        aria-label={`Remove ${item.product.title} from cart`}
                       >
                         <Trash2 className="h-5 w-5" />
                       </button>
                     </div>
                     <div className="mt-2 flex items-center">
                       <button
-                        onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                        onClick={() => updateQuantity(item.product.id, item.size, item.quantity - 1)}
                         className="rounded-full p-1 text-gray-600 hover:bg-gray-100"
+                        aria-label="Decrease quantity"
                       >
                         <Minus className="h-4 w-4" />
                       </button>
                       <span className="mx-2 text-gray-900">{item.quantity}</span>
                       <button
-                        onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                        onClick={() => updateQuantity(item.product.id, item.size, item.quantity + 1)}
                         className="rounded-full p-1 text-gray-600 hover:bg-gray-100"
+                        aria-label="Increase quantity"
                       >
                         <Plus className="h-4 w-4" />
                       </button>
@@ -89,19 +86,30 @@ export function CartSheet() {
           )}
           {items.length > 0 && (
             <div className="border-t border-gray-200 px-4 py-6 mt-6">
-              <div className="flex justify-between text-base font-medium text-gray-900">
-                <p>Subtotal</p>
-                <p>${total.toFixed(2)}</p>
+              <div className="space-y-1 text-sm">
+                <div className="flex justify-between text-gray-600">
+                  <span>Subtotal</span>
+                  <span>{formatPrice(subtotal)}</span>
+                </div>
+                <div className="flex justify-between text-gray-600">
+                  <span>Shipping</span>
+                  <span>{formatPrice(shipping)}</span>
+                </div>
+                <div className="flex justify-between text-gray-600">
+                  <span>Tax</span>
+                  <span>{formatPrice(tax)}</span>
+                </div>
               </div>
-              <p className="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
+              <div className="flex justify-between text-base font-medium text-gray-900 mt-2 pt-2 border-t">
+                <p>Total</p>
+                <p>{formatPrice(total)}</p>
+              </div>
               <div className="mt-6">
-                <button
-                  onClick={handleCheckout}
-                  disabled={isCheckingOut}
-                  className="w-full flex items-center justify-center py-3 px-6 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
-                >
-                  {isCheckingOut ? 'Processing...' : 'Checkout'}
-                </button>
+                <Button asChild className="w-full">
+                  <Link href="/checkout" onClick={() => setIsOpen(false)}>
+                    Checkout
+                  </Link>
+                </Button>
               </div>
             </div>
           )}

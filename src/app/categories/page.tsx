@@ -72,7 +72,7 @@ function CategoriesContent() {
                 </div>
               </div>
 
-              <div className="absolute inset-0 bg-linear-to-t from-white via-white/0 to-white/0 pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-t from-white via-white/0 to-white/0 pointer-events-none" />
             </Link>
           )
         })}

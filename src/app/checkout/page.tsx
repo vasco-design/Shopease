@@ -3,6 +3,8 @@
 import { useCart } from '@/lib/cart'
 import { formatPrice } from '@/lib/utils'
 import { useState, Suspense } from 'react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -18,7 +20,8 @@ export default function CheckoutPage() {
 }
 
 function CheckoutContent() {
-  const { items, total } = useCart()
+  const router = useRouter()
+  const { items, total, subtotal, shipping, tax, clearCart } = useCart()
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
@@ -41,11 +44,10 @@ function CheckoutContent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    // Simulate order processing
     await new Promise(resolve => setTimeout(resolve, 2000))
-    // Here you would typically make an API call to process the order
     setLoading(false)
-    alert('Order placed successfully!')
+    clearCart()
+    router.push('/?order=success')
   }
 
   if (items.length === 0) {
@@ -53,7 +55,9 @@ function CheckoutContent() {
       <div className="max-w-4xl mx-auto p-6 text-center">
         <h1 className="text-2xl font-bold mb-4">Your cart is empty</h1>
         <p className="text-gray-600 mb-4">Add some items to your cart before checking out.</p>
-        <Button onClick={() => window.history.back()}>Continue Shopping</Button>
+        <Button asChild>
+          <Link href="/products">Continue Shopping</Link>
+        </Button>
       </div>
     )
   }
@@ -192,15 +196,19 @@ function CheckoutContent() {
               ))}
               
               <div className="border-t pt-4 space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Subtotal</span>
-                  <span>{formatPrice(total)}</span>
+                <div className="flex justify-between text-gray-600">
+                  <span>Subtotal</span>
+                  <span>{formatPrice(subtotal)}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Shipping</span>
-                  <span>Free</span>
+                <div className="flex justify-between text-gray-600">
+                  <span>Shipping</span>
+                  <span>{formatPrice(shipping)}</span>
                 </div>
-                <div className="flex justify-between font-semibold text-lg">
+                <div className="flex justify-between text-gray-600">
+                  <span>Tax</span>
+                  <span>{formatPrice(tax)}</span>
+                </div>
+                <div className="flex justify-between font-semibold text-lg pt-2">
                   <span>Total</span>
                   <span>{formatPrice(total)}</span>
                 </div>

@@ -1,0 +1,240 @@
+{
+  "info": {
+    "name": "ShopEase API",
+    "version": "1.0.0",
+    "description": "Complete E-commerce Platform API"
+  },
+  "baseUrl": "http://localhost:5000/api",
+  "endpoints": {
+    "products": {
+      "getAll": {
+        "method": "GET",
+        "path": "/products",
+        "description": "Get all products with pagination"
+      },
+      "getById": {
+        "method": "GET",
+        "path": "/products/{productId}",
+        "description": "Get specific product by ID"
+      },
+      "getByCategory": {
+        "method": "GET",
+        "path": "/products/category/{category}",
+        "description": "Get products by category"
+      },
+      "getCategories": {
+        "method": "GET",
+        "path": "/products/categories",
+        "description": "Get all available categories"
+      }
+    },
+    "admin": {
+      "getStats": {
+        "method": "GET",
+        "path": "/admin/stats",
+        "description": "Get dashboard statistics"
+      },
+      "createProduct": {
+        "method": "POST",
+        "path": "/admin/products",
+        "description": "Create new product",
+        "body": {
+          "id": "string",
+          "title": "string",
+          "price": "number",
+          "category": "string",
+          "desc": "string",
+          "img": "string (optional)",
+          "sizes": "array",
+          "stock": "number"
+        }
+      },
+      "updateProduct": {
+        "method": "PUT",
+        "path": "/admin/products/{productId}",
+        "description": "Update product details"
+      },
+      "deleteProduct": {
+        "method": "DELETE",
+        "path": "/admin/products/{productId}",
+        "description": "Delete product"
+      }
+    },
+    "inventory": {
+      "getAll": {
+        "method": "GET",
+        "path": "/inventory",
+        "description": "Get all inventory items"
+      },
+      "getLowStock": {
+        "method": "GET",
+        "path": "/inventory/low-stock",
+        "description": "Get items with low stock"
+      },
+      "getByProductId": {
+        "method": "GET",
+        "path": "/inventory/{productId}",
+        "description": "Get inventory for specific product"
+      },
+      "updateStock": {
+        "method": "PUT",
+        "path": "/inventory/{productId}",
+        "description": "Update stock levels",
+        "body": {
+          "action": "set|add|subtract",
+          "quantity": "number",
+          "reorder_level": "number (optional)"
+        }
+      }
+    },
+    "orders": {
+      "getAll": {
+        "method": "GET",
+        "path": "/orders",
+        "description": "Get all orders with optional filtering",
+        "params": {
+          "status": "string (optional)",
+          "page": "number"
+        }
+      },
+      "getById": {
+        "method": "GET",
+        "path": "/orders/{orderId}",
+        "description": "Get specific order details"
+      },
+      "create": {
+        "method": "POST",
+        "path": "/orders",
+        "description": "Create new order",
+        "body": {
+          "customer_name": "string",
+          "customer_email": "string",
+          "customer_phone": "string",
+          "address": "string",
+          "items": "array"
+        }
+      },
+      "updateStatus": {
+        "method": "PUT",
+        "path": "/orders/{orderId}",
+        "description": "Update order status",
+        "body": {
+          "status": "Pending|Processing|Shipped|Delivered|Cancelled",
+          "payment_status": "Pending|Completed|Failed"
+        }
+      },
+      "cancel": {
+        "method": "POST",
+        "path": "/orders/{orderId}/cancel",
+        "description": "Cancel order (restores inventory)"
+      }
+    },
+    "payment": {
+      "initiate": {
+        "method": "POST",
+        "path": "/payment/initiate",
+        "description": "Initiate payment process",
+        "body": {
+          "order_id": "string",
+          "amount": "number",
+          "payment_method": "credit_card|debit_card|wallet|bank_transfer"
+        }
+      },
+      "process": {
+        "method": "POST",
+        "path": "/payment/process",
+        "description": "Process payment transaction",
+        "body": {
+          "transaction_id": "string",
+          "card_number": "string",
+          "cvv": "string",
+          "expiry": "MM/YY",
+          "payment_method": "string"
+        }
+      },
+      "getStatus": {
+        "method": "GET",
+        "path": "/payment/status/{transactionId}",
+        "description": "Check transaction status"
+      },
+      "getMethods": {
+        "method": "GET",
+        "path": "/payment/methods",
+        "description": "Get available payment methods"
+      }
+    },
+    "chatbot": {
+      "sendMessage": {
+        "method": "POST",
+        "path": "/chatbot/chat",
+        "description": "Send message to chatbot",
+        "body": {
+          "message": "string"
+        }
+      },
+      "getFAQ": {
+        "method": "GET",
+        "path": "/chatbot/faq",
+        "description": "Get frequently asked questions"
+      },
+      "getSuggestions": {
+        "method": "GET",
+        "path": "/chatbot/suggestions",
+        "description": "Get chat suggestions"
+      }
+    }
+  },
+  "testCards": {
+    "visa": {
+      "number": "4111111111111111",
+      "cvv": "123",
+      "expiry": "12/25"
+    },
+    "mastercard": {
+      "number": "5555555555554444",
+      "cvv": "456",
+      "expiry": "12/25"
+    },
+    "amex": {
+      "number": "378282246310005",
+      "cvv": "1234",
+      "expiry": "12/25"
+    }
+  },
+  "sampleRequests": {
+    "createOrder": {
+      "method": "POST",
+      "url": "/orders",
+      "body": {
+        "customer_name": "John Doe",
+        "customer_email": "john@example.com",
+        "customer_phone": "1234567890",
+        "address": "123 Main St, City",
+        "items": [
+          {
+            "product_id": "p1",
+            "quantity": 2
+          }
+        ]
+      }
+    },
+    "processPayment": {
+      "method": "POST",
+      "url": "/payment/process",
+      "body": {
+        "transaction_id": "uuid-here",
+        "card_number": "4111111111111111",
+        "cvv": "123",
+        "expiry": "12/25",
+        "payment_method": "credit_card"
+      }
+    },
+    "chatMessage": {
+      "method": "POST",
+      "url": "/chatbot/chat",
+      "body": {
+        "message": "What is your return policy?"
+      }
+    }
+  }
+}
